@@ -1,0 +1,192 @@
+/* ===== CONFIGURAÇÃO GERAL ===== */
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #577ada; /* fundo azul escuro */
+  color: #ffffff;
+}
+
+/* ===== CABEÇALHO / LOGO ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+.logo {
+  height: 80px;
+}
+
+/* ===== INPUT DE BIPAGEM ===== */
+input {
+  width: 300px;
+  height: 40px;
+  font-size: 18px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* ===== SELECT ===== */
+select {
+  height: 35px;
+  font-size: 14px;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+/* ===== INPUT DATE ===== */
+input[type="date"] {
+  height: 35px;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 5px;
+  border: none;
+  width: 150px; /* tamanho reduzido */
+}
+
+/* ===== CABEÇALHO ACOMPANHAMENTO ===== */
+.acomp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+.acomp-header h3 {
+  margin: 0;
+}
+
+/* ===== BOTÃO DOWNLOAD ===== */
+#btnDownload {
+  background-color: #1613e0;
+  color: #ffffff;
+  border: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#btnDownload:hover {
+  background-color: #1565c0;
+}
+
+/* ===== TABELA ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 6px;
+  text-align: center;
+}
+
+/* ===== STATUS ===== */
+.ok {
+  color: green;
+  font-weight: bold;
+}
+
+.erro {
+  color: red;
+  font-weight: bold;
+}
+
+/* ===== CONTADORES À DIREITA ===== */
+.contadores {
+  display: flex;
+  gap: 15px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.contadores div {
+  background-color: #ffffff;
+  color: #000;
+  padding: 6px 10px;
+  border-radius: 6px;
+  min-width: 80px;
+}
+
+.contadores strong {
+  font-size: 18px;
+}
+
+/* ===== FILTROS ===== */
+.filtros {
+  display: flex;
+  justify-content: space-between; /* status esquerda / data direita */
+  align-items: center;
+  margin-top: 15px;
+  gap: 20px;
+}
+
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVO (COLETOR / CELULAR) ===== */
+@media (max-width: 768px) {
+  input {
+    width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .contadores {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filtros {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ===== MENSAGEM DUPLICIDADE ===== */
+.mensagem {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: none;
+}
+
+.mensagem.aviso {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+.mensagem.sucesso {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.mensagem.erro {
+  background-color: #f44336;
+  color: #fff;
+}

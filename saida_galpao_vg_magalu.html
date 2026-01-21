@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Saída Galpão VG Magalu</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- SUPABASE SDK (OBRIGATÓRIO) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- CABEÇALHO -->
+  <header class="header">
+    <h2>Saída Galpão VG Magalu</h2>
+
+    <div class="contadores">
+      <div>
+        Entrada<br>
+        <strong id="countEntrada">0</strong>
+      </div>
+      <div>
+        Saída<br>
+        <strong id="countSaida">0</strong>
+      </div>
+    </div>
+
+    <img src="logo.png" alt="Logo da Empresa" class="logo">
+  </header>
+
+  <!-- BIPAGEM -->
+  <section class="bipagem">
+    <input
+      id="input"
+      type="text"
+      placeholder="Bipe o código aqui"
+      autocomplete="off"
+      autofocus
+    >
+  </section>
+
+  <!-- MENSAGEM (OBRIGATÓRIA) -->
+  <div id="mensagem" class="mensagem"></div>
+
+  <!-- FILTROS -->
+  <section class="filtros" style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
+    <label>
+      <strong>Status:</strong>
+      <select id="filtroStatus">
+        <option value="todos">Todos</option>
+        <option value="Falta Entrada">Falta Entrada</option>
+        <option value="Falta Saída">Falta Saída</option>
+        <option value="OK">OK</option>
+      </select>
+    </label>
+
+    <label>
+      <strong>Data:</strong>
+      <input type="date" id="filtroData">
+    </label>
+  </section>
+
+  <!-- CABEÇALHO DO ACOMPANHAMENTO -->
+  <div class="acomp-header">
+    <h3>Acompanhamento por Código</h3>
+    <button id="btnDownload" type="button">📥 Baixar Dados</button>
+  </div>
+
+  <!-- TABELA -->
+  <div id="acompanhamento"></div>
+
+  <!-- DEFINIÇÃO DA ETAPA -->
+  <script>
+    const ETAPA = "saida";
+  </script>
+
+  <!-- SCRIPT PRINCIPAL -->
+  <script src="script.js" defer></script>
+
+</body>
+</html>
