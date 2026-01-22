@@ -14,7 +14,7 @@
 </head>
 <body>
 
-  <!-- CABEÇALHO -->
+  <!-- CABEÇALHO FIXO -->
   <header class="header">
     <h2>Saída Galpão VG Magalu</h2>
 
@@ -43,11 +43,11 @@
     >
   </section>
 
-  <!-- MENSAGEM (OBRIGATÓRIA) -->
+  <!-- MENSAGEM -->
   <div id="mensagem" class="mensagem"></div>
 
   <!-- FILTROS -->
-  <section class="filtros" style="display:flex; justify-content:space-between; align-items:center; gap:20px;">
+  <section class="filtros">
     <label>
       <strong>Status:</strong>
       <select id="filtroStatus">
@@ -64,14 +64,16 @@
     </label>
   </section>
 
-  <!-- CABEÇALHO DO ACOMPANHAMENTO -->
+  <!-- CABEÇALHO DA LISTAGEM -->
   <div class="acomp-header">
     <h3>Acompanhamento por Código</h3>
     <button id="btnDownload" type="button">📥 Baixar Dados</button>
   </div>
 
-  <!-- TABELA -->
-  <div id="acompanhamento"></div>
+  <!-- 🔽 ÚNICO PONTO DE SCROLL -->
+  <div class="tabela-container">
+    <div id="acompanhamento"></div>
+  </div>
 
   <!-- DEFINIÇÃO DA ETAPA -->
   <script>
