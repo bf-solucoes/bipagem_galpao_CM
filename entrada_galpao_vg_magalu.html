@@ -16,11 +16,11 @@
 </head>
 <body>
 
-  <!-- CABEÇALHO -->
+  <!-- CABEÇALHO FIXO -->
   <header class="header">
     <h2>Entrada Galpão VG Magalu</h2>
 
-    <!-- CONTADORES À DIREITA -->
+    <!-- CONTADORES -->
     <div class="contadores">
       <div>
         Entrada<br>
@@ -46,7 +46,7 @@
     >
   </section>
 
-  <!-- MENSAGEM (usado pelo JS) -->
+  <!-- MENSAGEM -->
   <div id="mensagem" class="mensagem"></div>
 
   <!-- FILTROS -->
@@ -67,14 +67,16 @@
     </label>
   </section>
 
-  <!-- CABEÇALHO DO ACOMPANHAMENTO -->
+  <!-- CABEÇALHO DA LISTAGEM -->
   <div class="acomp-header">
     <h3>Acompanhamento por Código</h3>
     <button id="btnDownload" type="button">📥 Baixar Dados</button>
   </div>
 
-  <!-- TABELA -->
-  <div id="acompanhamento"></div>
+  <!-- 🔽 ÚNICO PONTO DE SCROLL -->
+  <div class="tabela-container">
+    <div id="acompanhamento"></div>
+  </div>
 
   <!-- DEFINIÇÃO DA ETAPA -->
   <script>
