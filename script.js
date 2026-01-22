@@ -71,18 +71,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     RENDER
+     RENDER (CORRIGIDO)
   ========================= */
   function render(dados) {
     let html = `
       <table>
-        <tr>
-          <th>Entrada</th>
-          <th>Saída</th>
-          <th>Data (Entrada)</th>
-          <th>Data (Saída)</th>
-          <th>Status</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Entrada</th>
+            <th>Saída</th>
+            <th>Data (Entrada)</th>
+            <th>Data (Saída)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
     `;
 
     Object.keys(dados).sort().forEach(codigo => {
@@ -99,7 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     });
 
-    html += "</table>";
+    html += `
+        </tbody>
+      </table>
+    `;
+
     acompanhamento.innerHTML = html;
   }
 
@@ -125,8 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (r.saida) saida++;
       });
 
-      cntEntrada.innerText = entrada;
-      cntSaida.innerText = saida;
+      if (cntEntrada) cntEntrada.innerText = entrada;
+      if (cntSaida) cntSaida.innerText = saida;
 
       render(aplicarFiltros(dadosBrutos));
     } catch (e) {
@@ -136,31 +143,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =========================
      REGISTRAR MOVIMENTAÇÃO
-     (FUNCIONA PARA ENTRADA E SAÍDA)
   ========================= */
   async function registrarMovimentacao(codigo) {
 
     if (ETAPA === "entrada") {
       const { error } = await supabase
         .from("controle_galpao")
-        .upsert({
-          codigo: codigo,
-          entrada: true,
-          data_entrada: new Date()
-        }, { onConflict: "codigo" });
-
+        .upsert(
+          { codigo, entrada: true, data_entrada: new Date() },
+          { onConflict: "codigo" }
+        );
       if (error) throw error;
     }
 
     if (ETAPA === "saida") {
       const { error } = await supabase
         .from("controle_galpao")
-        .upsert({
-          codigo: codigo,
-          saida: true,
-          data_saida: new Date()
-        }, { onConflict: "codigo" });
-
+        .upsert(
+          { codigo, saida: true, data_saida: new Date() },
+          { onConflict: "codigo" }
+        );
       if (error) throw error;
     }
   }
@@ -168,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      INPUT → FILA
   ========================= */
-  input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
     e.preventDefault();
 
@@ -217,7 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
     a.href = url;
     a.download = `controle_${ETAPA}.csv`;
@@ -225,14 +226,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =========================
-     AUTO REFRESH
-  ========================= */
-  setInterval(sincronizar, AUTO_REFRESH);
-
-  /* =========================
      INIT
   ========================= */
   sincronizar();
+  setInterval(sincronizar, AUTO_REFRESH);
   input.focus();
 
 });
