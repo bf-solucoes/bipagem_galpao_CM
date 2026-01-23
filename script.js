@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   const AUTO_REFRESH = 5000;
-
   const FILA = [];
   let processando = false;
   let dadosBrutos = {};
@@ -32,6 +31,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const msg = document.getElementById("mensagem");
 
   /* =========================
+     STATUS (FONTE ÚNICA)
+  ========================= */
+  function calcularStatus(d) {
+    if (d.entrada && d.saida) return "OK";
+    if (d.entrada && !d.saida) return "Falta Saída";
+    if (!d.entrada && d.saida) return "Falta Entrada";
+    return "Sem Movimentação";
+  }
+
+  /* =========================
      MENSAGEM
   ========================= */
   function mostrarMensagem(texto, tipo = "aviso", tempo = 1200) {
@@ -43,21 +52,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     FILTROS
+     FILTROS + CONTADORES
   ========================= */
   function aplicarFiltros(dados) {
     const statusSelecionado = filtroStatus?.value || "todos";
     const dataSelecionada = filtroData?.value || "";
 
     let filtrado = {};
+    let entrada = 0;
+    let saida = 0;
 
     Object.keys(dados).forEach(codigo => {
       const d = dados[codigo];
+      const status = calcularStatus(d);
 
-      if (statusSelecionado !== "todos" && d.status !== statusSelecionado) return;
+      // filtro status
+      if (statusSelecionado !== "todos" && status !== statusSelecionado) return;
 
+      // filtro data
       if (dataSelecionada) {
-        const dataRef = ETAPA === "entrada" ? d.data_entrada : d.data_saida;
+        const dataRef =
+          ETAPA === "entrada" ? d.data_entrada :
+          ETAPA === "saida" ? d.data_saida :
+          null;
+
         if (!dataRef) return;
 
         const dataISO = new Date(dataRef).toISOString().slice(0, 10);
@@ -65,13 +83,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       filtrado[codigo] = d;
+
+      if (d.entrada) entrada++;
+      if (d.saida) saida++;
     });
+
+    // contadores reativos aos filtros
+    if (cntEntrada) cntEntrada.innerText = entrada;
+    if (cntSaida) cntSaida.innerText = saida;
 
     return filtrado;
   }
 
   /* =========================
-     RENDER (CORRIGIDO)
+     RENDER
   ========================= */
   function render(dados) {
     let html = `
@@ -90,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Object.keys(dados).sort().forEach(codigo => {
       const d = dados[codigo];
+      const status = calcularStatus(d);
 
       html += `
         <tr>
@@ -97,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${d.saida ? codigo : ""}</td>
           <td>${d.data_entrada ? new Date(d.data_entrada).toLocaleString("pt-BR") : ""}</td>
           <td>${d.data_saida ? new Date(d.data_saida).toLocaleString("pt-BR") : ""}</td>
-          <td class="${d.status === "OK" ? "ok" : "erro"}">${d.status}</td>
+          <td class="${status === "OK" ? "ok" : "erro"}">${status}</td>
         </tr>
       `;
     });
@@ -123,17 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (error) throw error;
 
       dadosBrutos = {};
-      let entrada = 0;
-      let saida = 0;
-
       data.forEach(r => {
         dadosBrutos[r.codigo] = r;
-        if (r.entrada) entrada++;
-        if (r.saida) saida++;
       });
-
-      if (cntEntrada) cntEntrada.innerText = entrada;
-      if (cntSaida) cntSaida.innerText = saida;
 
       render(aplicarFiltros(dadosBrutos));
     } catch (e) {
@@ -145,26 +163,16 @@ document.addEventListener("DOMContentLoaded", () => {
      REGISTRAR MOVIMENTAÇÃO
   ========================= */
   async function registrarMovimentacao(codigo) {
+    const payload =
+      ETAPA === "entrada"
+        ? { codigo, entrada: true, data_entrada: new Date() }
+        : { codigo, saida: true, data_saida: new Date() };
 
-    if (ETAPA === "entrada") {
-      const { error } = await supabase
-        .from("controle_galpao")
-        .upsert(
-          { codigo, entrada: true, data_entrada: new Date() },
-          { onConflict: "codigo" }
-        );
-      if (error) throw error;
-    }
+    const { error } = await supabase
+      .from("controle_galpao")
+      .upsert(payload, { onConflict: "codigo" });
 
-    if (ETAPA === "saida") {
-      const { error } = await supabase
-        .from("controle_galpao")
-        .upsert(
-          { codigo, saida: true, data_saida: new Date() },
-          { onConflict: "codigo" }
-        );
-      if (error) throw error;
-    }
+    if (error) throw error;
   }
 
   /* =========================
@@ -184,27 +192,33 @@ document.addEventListener("DOMContentLoaded", () => {
     processarFila();
   });
 
-  /* =========================
-     PROCESSAR FILA
-  ========================= */
   async function processarFila() {
     if (processando || FILA.length === 0) return;
-
     processando = true;
-    const codigo = FILA.shift();
 
     try {
-      await registrarMovimentacao(codigo);
-      mostrarMensagem(`✅ ${codigo}`, "sucesso");
+      await registrarMovimentacao(FILA.shift());
+      mostrarMensagem("Registrado com sucesso", "sucesso");
       await sincronizar();
     } catch (e) {
-      mostrarMensagem(`❌ Erro ao registrar ${codigo}`, "erro");
+      mostrarMensagem("Erro ao registrar", "erro");
       console.error(e);
     } finally {
       processando = false;
       processarFila();
     }
   }
+
+  /* =========================
+     EVENTOS FILTROS
+  ========================= */
+  filtroStatus?.addEventListener("change", () => {
+    render(aplicarFiltros(dadosBrutos));
+  });
+
+  filtroData?.addEventListener("change", () => {
+    render(aplicarFiltros(dadosBrutos));
+  });
 
   /* =========================
      DOWNLOAD CSV
@@ -214,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Object.keys(dadosBrutos).forEach(codigo => {
       const d = dadosBrutos[codigo];
-      csv += `${codigo};${d.entrada};${d.saida};${d.data_entrada || ""};${d.data_saida || ""};${d.status}\n`;
+      csv += `${codigo};${d.entrada};${d.saida};${d.data_entrada || ""};${d.data_saida || ""};${calcularStatus(d)}\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
