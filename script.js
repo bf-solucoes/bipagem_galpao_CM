@@ -139,25 +139,46 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =========================
      SINCRONIZAR
   ========================= */
-  async function sincronizar() {
-    try {
+async function sincronizar() {
+  try {
+    let todosDados = [];
+    let page = 0;
+    const pageSize = 1000;
+
+    while (true) {
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+
       const { data, error } = await supabase
-        .from("controle_galpao")
+        .from("controle_galpao") // ✅ tabela correta
         .select("*")
-        .order("id", { ascending: false });
+        .order("id", { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
-      dadosBrutos = {};
-      data.forEach(r => {
-        dadosBrutos[r.codigo] = r;
-      });
+      if (!data || data.length === 0) break;
 
-      render(aplicarFiltros(dadosBrutos));
-    } catch (e) {
-      console.error("Erro ao sincronizar:", e);
+      todosDados = todosDados.concat(data);
+
+      if (data.length < pageSize) break;
+
+      page++;
     }
+
+    // 🔵 mantém sua lógica original
+    dadosBrutos = {};
+    todosDados.forEach(r => {
+      dadosBrutos[r.codigo] = r;
+    });
+
+    render(aplicarFiltros(dadosBrutos));
+
+  } catch (e) {
+    console.error("Erro Supabase:", e);
   }
+}
+  
 
   /* =========================
      REGISTRAR MOVIMENTAÇÃO
