@@ -121,12 +121,29 @@ document.addEventListener("DOMContentLoaded", () => {
         <tr>
           <td>${d.entrada ? codigo : ""}</td>
           <td>${d.saida ? codigo : ""}</td>
-          <td>${d.data_entrada ? new Date(d.data_entrada).toLocaleString("pt-BR") : ""}</td>
-          <td>${d.data_saida ? new Date(d.data_saida).toLocaleString("pt-BR") : ""}</td>
+
+          <td>${
+            d.data_entrada
+              ? new Date(d.data_entrada + "Z").toLocaleString("pt-BR", {
+                  timeZone: "America/Sao_Paulo"
+                })
+              : ""
+          }</td>
+
+          <td>${
+            d.data_saida
+              ? new Date(d.data_saida + "Z").toLocaleString("pt-BR", {
+                  timeZone: "America/Sao_Paulo"
+                })
+              : ""
+          }</td>
+
           <td class="${status === "OK" ? "ok" : "erro"}">${status}</td>
         </tr>
       `;
     });
+
+
 
     html += `
         </tbody>
